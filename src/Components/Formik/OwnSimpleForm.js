@@ -55,7 +55,7 @@ const OwnSimpleForm = () => {
       data[key] = "";
 
       if (formSchema[key].type === "text") {
-        validation[key] = Yup.string();
+        validation[key] = Yup.string().min(2, "Too Short").max(200, "Too Long");
       } else if (formSchema[key].type === "email") {
         validation[key] = Yup.string().email();
       } else if (formSchema[key].type === "select") {
