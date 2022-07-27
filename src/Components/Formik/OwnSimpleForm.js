@@ -48,12 +48,9 @@ const OwnSimpleForm = () => {
   }, []);
 
   const validate = () => {
-    let data = {};
     let validation = {};
 
     for (var key of Object.keys(formSchema)) {
-      data[key] = "";
-
       if (formSchema[key].type === "text") {
         validation[key] = Yup.string().min(2, "Too Short").max(200, "Too Long");
       } else if (formSchema[key].type === "email") {
@@ -69,11 +66,13 @@ const OwnSimpleForm = () => {
       }
     }
 
-    setFormData(data);
     setValidationSchema(Yup.object().shape({ ...validation }));
   };
 
   const FormComponents = ({ name, schema }) => {
+    useEffect(() => {
+      console.log("I am called herr");
+    });
     const props = {
       name: name,
       label: schema.label,
@@ -87,6 +86,8 @@ const OwnSimpleForm = () => {
   };
 
   const onSubmit = (values, { setSubmitting }) => {
+    setFormData(values);
+    console.log("\nVisualizing Values: ", FormData);
     alert(JSON.stringify(values));
     setSubmitting(false);
   };

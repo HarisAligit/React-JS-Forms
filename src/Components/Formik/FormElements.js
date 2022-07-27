@@ -12,7 +12,7 @@ function FormikForm(props) {
 }
 
 function TextField(props) {
-  const { name, label, placeholder, ...rest } = props;
+  const { name, label, placeholder } = props;
   return (
     <div>
       {label && <label htmlFor={name}>{label}</label>}
@@ -21,7 +21,6 @@ function TextField(props) {
         name={name}
         id={name}
         placeholder={placeholder || ""}
-        {...rest}
       />
       <ErrorMessage
         name={name}
