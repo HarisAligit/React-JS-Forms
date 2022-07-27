@@ -1,12 +1,12 @@
 import React from "react";
-import { Formik, Form as FormikForm, Field, ErrorMessage } from "formik";
+import { Formik, Form, Field, ErrorMessage } from "formik";
 
-function Form(props) {
+function FormikForm(props) {
   return (
     <Formik {...props}>
-      <FormikForm className="needs-validation" novalidate="">
+      <Form className="needs-validation" novalidate="">
         {props.children}
-      </FormikForm>
+      </Form>
     </Formik>
   );
 }
@@ -14,10 +14,9 @@ function Form(props) {
 function TextField(props) {
   const { name, label, placeholder, ...rest } = props;
   return (
-    <>
+    <div>
       {label && <label for={name}>{label}</label>}
       <Field
-        className="form-control"
         type="text"
         name={name}
         id={name}
@@ -28,27 +27,27 @@ function TextField(props) {
         name={name}
         render={(msg) => <div style={{ color: "red" }}>{msg}</div>}
       />
-    </>
+    </div>
   );
 }
 
 function SelectField(props) {
   const { name, label, options } = props;
   return (
-    <>
+    <div>
       {label && <label for={name}>{label}</label>}
       <Field as="select" id={name} name={name}>
         <option value="">Choose...</option>
-        {options.map((optn, index) => (
-          <option value={optn.value} label={optn.label || optn.value} />
+        {options.map((opt, index) => (
+          <option value={opt.value} label={opt.label || opt.value} />
         ))}
       </Field>
       <ErrorMessage
         name={name}
         render={(msg) => <div style={{ color: "red" }}>{msg}</div>}
       />
-    </>
+    </div>
   );
 }
 
-export { SelectField, TextField, Form };
+export { SelectField, TextField, FormikForm };

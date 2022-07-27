@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Form, TextField, SelectField } from "./FormElements";
+import { TextField, SelectField, FormikForm } from "./FormElements";
 import * as Yup from "yup";
 
 const formSchema = {
@@ -12,6 +12,11 @@ const formSchema = {
     type: "email",
     label: "Email",
     required: true,
+  },
+  address: {
+    type: "text",
+    label: "Address",
+    required: false,
   },
   role: {
     type: "select",
@@ -38,9 +43,37 @@ const OwnSimpleForm = () => {
   const [FormData, setFormData] = useState({});
   const [ValidationSchema, setValidationSchema] = useState({});
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    validate(formSchema);
+  }, []);
 
-  const FormComponents = (name, schema) => {
+  const validate = () => {
+    let data = {};
+    let validation = {};
+
+    for (var key of Object.keys(formSchema)) {
+      data[key] = "";
+
+      if (formSchema[key].type === "text") {
+        validation[key] = Yup.string();
+      } else if (formSchema[key].type === "email") {
+        validation[key] = Yup.string().email();
+      } else if (formSchema[key].type === "select") {
+        validation[key] = Yup.string().oneOf(
+          formSchema[key].options.map((o) => o.value)
+        );
+      }
+
+      if (formSchema[key].required) {
+        validation[key] = validation[key].required("Required");
+      }
+    }
+
+    setFormData(data);
+    setValidationSchema(Yup.object().shape({ ...validation }));
+  };
+
+  const FormComponents = ({ name, schema }) => {
     const props = {
       name: name,
       label: schema.label,
@@ -52,4 +85,29 @@ const OwnSimpleForm = () => {
     if (type === "text" || type === "email") return <TextField {...props} />;
     return <SelectField {...props} />;
   };
+
+  const onSubmit = (values, { setSubmitting }) => {
+    alert(JSON.stringify(values));
+    setSubmitting(false);
+  };
+
+  return (
+    <div className="App">
+      <FormikForm
+        enableReinitialize
+        initialValues={FormData}
+        validationSchema={ValidationSchema}
+        onSubmit={onSubmit}
+      >
+        {Object.keys(formSchema).map((key, ind) => (
+          <div key={key}>
+            {<FormComponents name={key} schema={formSchema[key]} />}
+          </div>
+        ))}
+        <button type="submit">Submit</button>
+      </FormikForm>
+    </div>
+  );
 };
+
+export default OwnSimpleForm;

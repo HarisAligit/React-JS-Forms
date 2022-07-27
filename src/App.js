@@ -1,11 +1,11 @@
 import "./App.css";
-import SimpleForm from "./Components/Formik/SimpleForm";
+import OwnSimpleForm from "./Components/Formik/OwnSimpleForm";
 import TicketForm from "./Components/Formik/TicketForm";
 
 function App() {
   return (
     <div>
-      <SimpleForm></SimpleForm>
+      <OwnSimpleForm />
       <TicketForm />
     </div>
   );
