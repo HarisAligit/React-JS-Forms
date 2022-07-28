@@ -32,7 +32,7 @@ function TextField(props) {
   );
 }
 
-const AddInput = (e, field, values, touched, setValues) => {
+const AddInput = (e, field, values, touched, setValues, setForm) => {
   // setValues({
   //   ...values,
   //   ...{ userid: { type: "text", label: "Name", required: true } },
@@ -51,9 +51,11 @@ const AddInput = (e, field, values, touched, setValues) => {
     });
     flag = true;
     setValues(values);
+    setForm(values);
   } else {
     values[values.length - 1].userid.label = `${e.target.value} Id: `;
     setValues(values);
+    setForm(values);
   }
 
   console.log("values: ", values);
