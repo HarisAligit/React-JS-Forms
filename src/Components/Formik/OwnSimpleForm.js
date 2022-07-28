@@ -3,63 +3,44 @@ import { TextField, SelectField, FormikForm } from "./FormElements";
 import * as Yup from "yup";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 
-let schema = [
-  {
-    key: "name",
-    type: "text",
-    label: "Name",
-    required: true,
-  },
-  {
-    key: "name",
-    type: "text",
-    label: "Name",
-    required: true,
-  },
-];
-
 let formSchema = [
   {
-    name: {
-      type: "text",
-      label: "Name",
-      required: true,
-    },
+    key: "name",
+    type: "text",
+    label: "Name",
+    required: true,
   },
   {
-    email: {
-      type: "email",
-      label: "Email",
-      required: true,
-    },
+    key: "email",
+    type: "email",
+    label: "Email",
+    required: true,
   },
   {
-    address: {
-      type: "text",
-      label: "Address",
-      required: false,
-    },
+    key: "address",
+    type: "text",
+    label: "Address",
+    required: false,
   },
   {
-    role: {
-      type: "select",
-      label: "Role",
-      required: true,
-      options: [
-        {
-          label: "Admin",
-          value: "admin",
-        },
-        {
-          label: "User",
-          value: "user",
-        },
-        {
-          label: "Employee",
-          value: "Employee",
-        },
-      ],
-    },
+    key: "role",
+    type: "select",
+    label: "Role",
+    required: true,
+    options: [
+      {
+        label: "Admin",
+        value: "admin",
+      },
+      {
+        label: "User",
+        value: "user",
+      },
+      {
+        label: "Employee",
+        value: "Employee",
+      },
+    ],
   },
 ];
 
@@ -96,15 +77,15 @@ const OwnSimpleForm = () => {
   const FormComponents = ({ name, schema, values, touched, setValues }) => {
     const props = {
       name: name,
-      label: schema[name].label,
-      options: schema[name].options,
+      label: schema.label,
+      options: schema.options,
       values: values,
       touched: touched,
       setValues: setValues,
       setForm: setFormData,
     };
 
-    const type = schema[name].type;
+    const type = schema.type;
 
     if (type === "text" || type === "email") return <TextField {...props} />;
     return <SelectField {...props} />;
@@ -127,19 +108,17 @@ const OwnSimpleForm = () => {
       >
         {({ errors, values, touched, setValues }) => (
           <Form className="needs-validation" noValidate="">
-            {FormData.map((obj, key) =>
-              Object.keys(obj).map((inObj) => (
-                <div key={key}>
-                  <FormComponents
-                    name={inObj}
-                    schema={FormData[key]}
-                    values={values}
-                    touched={touched}
-                    setValues={setValues}
-                  />
-                </div>
-              ))
-            )}
+            {FormData.map((obj, key) => (
+              <div key={key}>
+                <FormComponents
+                  name={FormData[key].key}
+                  schema={FormData[key]}
+                  values={values}
+                  touched={touched}
+                  setValues={setValues}
+                />
+              </div>
+            ))}
             <button type="submit">Submit</button>
           </Form>
         )}

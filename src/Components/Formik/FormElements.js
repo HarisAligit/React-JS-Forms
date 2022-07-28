@@ -47,13 +47,16 @@ const AddInput = (e, field, values, touched, setValues, setForm) => {
 
   if (!flag) {
     values.push({
-      userid: { type: "text", label: `${e.target.value} Id: `, required: true },
+      key: "userid",
+      type: "text",
+      label: `${e.target.value} Id: `,
+      required: true,
     });
     flag = true;
     setValues(values);
     setForm(values);
   } else {
-    values[values.length - 1].userid.label = `${e.target.value} Id: `;
+    values[values.length - 1].label = `${e.target.value} Id: `;
     setValues(values);
     setForm(values);
   }
