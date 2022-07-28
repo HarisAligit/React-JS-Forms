@@ -13,6 +13,25 @@ function FormikForm(props) {
   );
 }
 
+function NumberField(props) {
+  const { name, label, placeholder } = props;
+  return (
+    <div>
+      {label && <label htmlFor={name}>{label}</label>}
+      <Field
+        type="number"
+        name={name}
+        id={name}
+        placeholder={placeholder || ""}
+      />
+      <ErrorMessage
+        name={name}
+        render={(msg) => <div style={{ color: "red" }}>{msg}</div>}
+      />
+    </div>
+  );
+}
+
 function TextField(props) {
   const { name, label, placeholder } = props;
   return (
@@ -48,7 +67,7 @@ const AddInput = (e, field, values, touched, setValues, setForm) => {
   if (!flag) {
     values.push({
       key: "userid",
-      type: "text",
+      type: "number",
       label: `${e.target.value} Id: `,
       required: true,
     });
@@ -98,4 +117,4 @@ function SelectField(props) {
   );
 }
 
-export { SelectField, TextField, FormikForm };
+export { SelectField, NumberField, TextField, FormikForm };

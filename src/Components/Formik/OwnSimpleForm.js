@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { TextField, SelectField } from "./FormElements";
+import { TextField, SelectField, NumberField } from "./FormElements";
 import * as Yup from "yup";
 import { Formik, Form } from "formik";
 
@@ -49,24 +49,29 @@ const OwnSimpleForm = () => {
   const [ValidationSchema, setValidationSchema] = useState({});
 
   useEffect(() => {
-    validate(formSchema);
+    validate(FormData);
   }, []);
 
   const validate = () => {
     let validation = {};
 
-    for (var key of Object.keys(formSchema)) {
-      if (formSchema[key].type === "text") {
+    console.log("FormData Length: ", FormData.length);
+    for (let i = 0; i < FormData.length; i++) {
+      const key = FormData[i].key;
+      if (FormData[i].type === "text") {
         validation[key] = Yup.string().min(2, "Too Short").max(200, "Too Long");
-      } else if (formSchema[key].type === "email") {
+        console.log("After validate: ", validation[key]);
+      } else if (FormData[i].type === "email") {
         validation[key] = Yup.string().email();
-      } else if (formSchema[key].type === "select") {
+      } else if (FormData[i].type === "select") {
         validation[key] = Yup.string().oneOf(
-          formSchema[key].options.map((o) => o.value)
+          FormData[i].options.map((o) => o.value)
         );
+      } else if (FormData[i].type === "number") {
+        // validation[i] = yup.string();
       }
 
-      if (formSchema[key].required) {
+      if (FormData[i].required) {
         validation[key] = validation[key].required("Required");
       }
     }
@@ -88,7 +93,8 @@ const OwnSimpleForm = () => {
     const type = schema.type;
 
     if (type === "text" || type === "email") return <TextField {...props} />;
-    return <SelectField {...props} />;
+    else if (type === "number") return <NumberField {...props} />;
+    else return <SelectField {...props} />;
   };
 
   const onSubmit = (values, { setSubmitting }) => {
@@ -108,17 +114,19 @@ const OwnSimpleForm = () => {
       >
         {({ errors, values, touched, setValues }) => (
           <Form className="needs-validation" noValidate="">
-            {FormData.map((obj, key) => (
-              <div key={key}>
-                <FormComponents
-                  name={FormData[key].key}
-                  schema={FormData[key]}
-                  values={values}
-                  touched={touched}
-                  setValues={setValues}
-                />
-              </div>
-            ))}
+            {FormData.map((obj, key) => {
+              return (
+                <div key={key}>
+                  <FormComponents
+                    name={FormData[key].key}
+                    schema={FormData[key]}
+                    values={values}
+                    touched={touched}
+                    setValues={setValues}
+                  />
+                </div>
+              );
+            })}
             <button type="submit">Submit</button>
           </Form>
         )}
