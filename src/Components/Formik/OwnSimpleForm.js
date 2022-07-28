@@ -1,46 +1,70 @@
 import React, { useState, useEffect } from "react";
 import { TextField, SelectField, FormikForm } from "./FormElements";
 import * as Yup from "yup";
+import { Formik, Form, Field, ErrorMessage } from "formik";
 
-const formSchema = {
-  name: {
+let schema = [
+  {
+    key: "name",
     type: "text",
     label: "Name",
     required: true,
   },
-  email: {
-    type: "email",
-    label: "Email",
-    required: true,
-  },
-  address: {
+  {
+    key: "name",
     type: "text",
-    label: "Address",
-    required: false,
-  },
-  role: {
-    type: "select",
-    label: "Role",
+    label: "Name",
     required: true,
-    options: [
-      {
-        label: "Admin",
-        value: "admin",
-      },
-      {
-        label: "User",
-        value: "user",
-      },
-      {
-        label: "Employee",
-        value: "Employee",
-      },
-    ],
   },
-};
+];
+
+let formSchema = [
+  {
+    name: {
+      type: "text",
+      label: "Name",
+      required: true,
+    },
+  },
+  {
+    email: {
+      type: "email",
+      label: "Email",
+      required: true,
+    },
+  },
+  {
+    address: {
+      type: "text",
+      label: "Address",
+      required: false,
+    },
+  },
+  {
+    role: {
+      type: "select",
+      label: "Role",
+      required: true,
+      options: [
+        {
+          label: "Admin",
+          value: "admin",
+        },
+        {
+          label: "User",
+          value: "user",
+        },
+        {
+          label: "Employee",
+          value: "Employee",
+        },
+      ],
+    },
+  },
+];
 
 const OwnSimpleForm = () => {
-  const [FormData, setFormData] = useState({});
+  const [FormData, setFormData] = useState(formSchema);
   const [ValidationSchema, setValidationSchema] = useState({});
 
   useEffect(() => {
@@ -69,17 +93,18 @@ const OwnSimpleForm = () => {
     setValidationSchema(Yup.object().shape({ ...validation }));
   };
 
-  const FormComponents = ({ name, schema }) => {
-    useEffect(() => {
-      console.log("I am called herr");
-    });
+  const FormComponents = ({ name, schema, values, touched, setValues }) => {
     const props = {
       name: name,
-      label: schema.label,
-      options: schema.options,
+      label: schema[name].label,
+      options: schema[name].options,
+      values: values,
+      touched: touched,
+      setValues: setValues,
+      setForm: setFormData,
     };
 
-    const type = schema.type;
+    const type = schema[name].type;
 
     if (type === "text" || type === "email") return <TextField {...props} />;
     return <SelectField {...props} />;
@@ -87,26 +112,38 @@ const OwnSimpleForm = () => {
 
   const onSubmit = (values, { setSubmitting }) => {
     setFormData(values);
-    console.log("\nVisualizing Values: ", FormData);
     alert(JSON.stringify(values));
     setSubmitting(false);
+    // setFormData(formSchema);
   };
 
   return (
     <div className="App">
-      <FormikForm
+      <Formik
         enableReinitialize
         initialValues={FormData}
         validationSchema={ValidationSchema}
         onSubmit={onSubmit}
       >
-        {Object.keys(formSchema).map((key, ind) => (
-          <div key={key}>
-            {<FormComponents name={key} schema={formSchema[key]} />}
-          </div>
-        ))}
-        <button type="submit">Submit</button>
-      </FormikForm>
+        {({ errors, values, touched, setValues }) => (
+          <Form className="needs-validation" noValidate="">
+            {FormData.map((obj, key) =>
+              Object.keys(obj).map((inObj) => (
+                <div key={key}>
+                  <FormComponents
+                    name={inObj}
+                    schema={FormData[key]}
+                    values={values}
+                    touched={touched}
+                    setValues={setValues}
+                  />
+                </div>
+              ))
+            )}
+            <button type="submit">Submit</button>
+          </Form>
+        )}
+      </Formik>
     </div>
   );
 };
