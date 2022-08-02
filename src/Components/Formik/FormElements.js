@@ -55,31 +55,29 @@ function TextField(props) {
   );
 }
 
-const AddInput = (e, field, values, setFieldValue) => {
+const AddInput = (e, field, attributes, values, setFieldValue) => {
   if (!flag) {
-    values.push({
-      key: `${e.target.value}id`,
+    attributes.push({
+      key: `userid`,
       type: "number",
+      usertype: `${e.target.value}`,
       label: `${e.target.value} id: `,
       required: true,
     });
     flag = true;
-    setFieldValue(values);
+    setFieldValue(attributes);
   } else {
-    values.pop();
-    values.push({
-      key: `${e.target.value}id`,
-      type: "number",
-      label: `${e.target.value} id: `,
-      required: true,
-    });
-    setFieldValue(values);
+    const len = attributes.length;
+    attributes[len - 1].label = `${e.target.value} id: `;
+    attributes[len - 1].usertype = `${e.target.value}`;
+    console.log("\nUser Type", attributes);
+    setFieldValue(attributes);
   }
   field.onChange(e);
 };
 
 function SelectField(props) {
-  const { name, label, options, values, setFieldValue } = props;
+  const { name, label, options, attributes, values, setFieldValue } = props;
   return (
     <div>
       {label && <label htmlFor={name}>{label}</label>}
@@ -87,7 +85,9 @@ function SelectField(props) {
         {({ field }) => (
           <select
             {...field}
-            onChange={(e) => AddInput(e, field, values, setFieldValue)}
+            onChange={(e) =>
+              AddInput(e, field, attributes, values, setFieldValue)
+            }
           >
             <option value="">Choose...</option>
             {options.map((opt, index) => (

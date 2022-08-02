@@ -68,31 +68,30 @@ const getInitialValues = (data) => {
 const OwnSimpleForm = () => {
   const [ValidationSchema, setValidationSchema] = useState({});
 
-  // useEffect(() => {
-  //   debugger;
-  //   validate(FormData);
-  // }, []);
+  useEffect(() => {
+    debugger;
+    validate(attributes);
+  }, [attributes]);
 
   const validate = () => {
     let validation = {};
 
-    console.log("FormData Length: ", FormData.length);
-    for (let i = 0; i < FormData.length; i++) {
-      const key = FormData[i].key;
-      if (FormData[i].type === "text") {
+    console.log("FormData Length: ", attributes.length);
+    for (let i = 0; i < attributes.length; i++) {
+      const key = attributes[i].key;
+      if (attributes[i].type === "text") {
         validation[key] = Yup.string().min(2, "Too Short").max(200, "Too Long");
-      } else if (FormData[i].type === "email") {
+      } else if (attributes[i].type === "email") {
         validation[key] = Yup.string().email();
-      } else if (FormData[i].type === "select") {
+      } else if (attributes[i].type === "select") {
         validation[key] = Yup.string().oneOf(
-          FormData[i].options.map((o) => console.log("\no.value: ", o.value))
+          attributes[i].options.map((o) => o.value)
         );
-      } else if (FormData[i].type === "number") {
+      } else if (attributes[i].type === "number") {
         // validation[i] = yup.string();
       }
 
-      if (FormData[i].required) {
-        console.log("\nValdition Key: ", validation[key]);
+      if (attributes[i].required) {
         validation[key] = validation[key].required("Required");
       }
     }
@@ -106,7 +105,7 @@ const OwnSimpleForm = () => {
     name,
     label,
     value,
-    values,
+    attributes,
     touched,
     setFieldValue,
     handleChange,
@@ -119,8 +118,8 @@ const OwnSimpleForm = () => {
       name: name,
       label: label,
       value: value,
-      values: values,
       touched: touched,
+      attributes: attributes,
       setFieldValue: setFieldValue,
       options: options,
       handleChange,
@@ -134,9 +133,10 @@ const OwnSimpleForm = () => {
     else if (type === "number") return <NumberField {...props} />;
   };
 
-  const onSubmit = (values, { setSubmitting }) => {
+  const onSubmit = (values, { setSubmitting, resetForm }) => {
     alert(JSON.stringify(values));
-    setSubmitting(false);
+    setSubmitting(true);
+    // resetForm();
   };
 
   return (
@@ -144,7 +144,7 @@ const OwnSimpleForm = () => {
       <Formik
         enableReinitialize
         initialValues={getInitialValues(attributes)}
-        // validationSchema={ValidationSchema}
+        validationSchema={ValidationSchema}
         onSubmit={onSubmit}
       >
         {(formikProps) => {
@@ -159,7 +159,8 @@ const OwnSimpleForm = () => {
                       type={obj?.type}
                       options={obj?.options}
                       value={formikProps?.values.key}
-                      values={attributes}
+                      attributes={attributes}
+                      values={formikProps.values}
                       touched={formikProps?.touched}
                       setFieldValue={formikProps?.setFieldValue}
                       handleChange={formikProps?.handleChange}
