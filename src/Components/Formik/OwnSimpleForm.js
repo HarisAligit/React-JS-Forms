@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, startTransition } from "react";
 import { TextField, SelectField, NumberField } from "./FormElements";
 import * as Yup from "yup";
 import { Formik, Form } from "formik";
 
-let formSchema = [
+let attributes = [
   {
     key: "name",
     type: "text",
@@ -44,13 +44,32 @@ let formSchema = [
   },
 ];
 
+const getInitialValues = (data) => {
+  const values = {};
+  data.map((attr) => {
+    switch (startTransition.type) {
+      case "string":
+        values[attr?.key] = "";
+        break;
+      case "text":
+        values[attr?.key] = "";
+        break;
+      case "number":
+        values[attr?.key] = 0;
+        break;
+      default:
+        values[attr?.key] = "";
+    }
+  });
+};
+
 const OwnSimpleForm = () => {
-  const [FormData, setFormData] = useState(formSchema);
   const [ValidationSchema, setValidationSchema] = useState({});
 
-  useEffect(() => {
-    validate(FormData);
-  }, []);
+  // useEffect(() => {
+  //   debugger;
+  //   validate(FormData);
+  // }, []);
 
   const validate = () => {
     let validation = {};
@@ -60,26 +79,35 @@ const OwnSimpleForm = () => {
       const key = FormData[i].key;
       if (FormData[i].type === "text") {
         validation[key] = Yup.string().min(2, "Too Short").max(200, "Too Long");
-        console.log("After validate: ", validation[key]);
       } else if (FormData[i].type === "email") {
         validation[key] = Yup.string().email();
       } else if (FormData[i].type === "select") {
         validation[key] = Yup.string().oneOf(
-          FormData[i].options.map((o) => o.value)
+          FormData[i].options.map((o) => console.log("\no.value: ", o.value))
         );
       } else if (FormData[i].type === "number") {
         // validation[i] = yup.string();
       }
 
       if (FormData[i].required) {
+        console.log("\nValdition Key: ", validation[key]);
         validation[key] = validation[key].required("Required");
       }
     }
 
+    console.log("After validate: ", validation);
+
     setValidationSchema(Yup.object().shape({ ...validation }));
   };
 
-  const FormComponents = ({ name, schema, values, touched, setValues }) => {
+  const FormComponents = ({
+    name,
+    schema,
+    values,
+    touched,
+    setValues,
+    handleChange,
+  }) => {
     const props = {
       name: name,
       label: schema.label,
@@ -87,7 +115,7 @@ const OwnSimpleForm = () => {
       values: values,
       touched: touched,
       setValues: setValues,
-      setForm: setFormData,
+      handleChange,
     };
 
     const type = schema.type;
@@ -98,38 +126,40 @@ const OwnSimpleForm = () => {
   };
 
   const onSubmit = (values, { setSubmitting }) => {
-    setFormData(values);
+    console.log(values);
     alert(JSON.stringify(values));
     setSubmitting(false);
-    // setFormData(formSchema);
   };
 
   return (
     <div className="App">
       <Formik
         enableReinitialize
-        initialValues={FormData}
+        initialValues={getInitialValues(attributes)}
         validationSchema={ValidationSchema}
         onSubmit={onSubmit}
       >
-        {({ errors, values, touched, setValues }) => (
-          <Form className="needs-validation" noValidate="">
-            {FormData.map((obj, key) => {
-              return (
-                <div key={key}>
-                  <FormComponents
-                    name={FormData[key].key}
-                    schema={FormData[key]}
-                    values={values}
-                    touched={touched}
-                    setValues={setValues}
-                  />
-                </div>
-              );
-            })}
-            <button type="submit">Submit</button>
-          </Form>
-        )}
+        {(formikProps) => {
+          return (
+            <Form className="needs-validation" noValidate="">
+              {attributes.map((obj, index) => {
+                return (
+                  <div key={obj?.key}>
+                    <FormComponents
+                      name={obj?.key}
+                      // schema={FormData[key]}
+                      values={formikProps?.values}
+                      touched={formikProps?.touched}
+                      setValues={formikProps?.setValues}
+                      handleChange={formikProps?.handleChange}
+                    />
+                  </div>
+                );
+              })}
+              <button type="submit">Submit</button>
+            </Form>
+          );
+        }}
       </Formik>
     </div>
   );

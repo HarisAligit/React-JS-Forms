@@ -14,7 +14,7 @@ function FormikForm(props) {
 }
 
 function NumberField(props) {
-  const { name, label, placeholder } = props;
+  const { name, label, placeholder, handleChange, key } = props;
   return (
     <div>
       {label && <label htmlFor={name}>{label}</label>}
@@ -22,6 +22,7 @@ function NumberField(props) {
         type="number"
         name={name}
         id={name}
+        onChange={handleChange(key)}
         placeholder={placeholder || ""}
       />
       <ErrorMessage
