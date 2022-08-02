@@ -69,14 +69,12 @@ const OwnSimpleForm = () => {
   const [ValidationSchema, setValidationSchema] = useState({});
 
   useEffect(() => {
-    debugger;
     validate(attributes);
-  }, [attributes]);
+  }, []);
 
   const validate = () => {
     let validation = {};
 
-    console.log("FormData Length: ", attributes.length);
     for (let i = 0; i < attributes.length; i++) {
       const key = attributes[i].key;
       if (attributes[i].type === "text") {
@@ -88,7 +86,7 @@ const OwnSimpleForm = () => {
           attributes[i].options.map((o) => o.value)
         );
       } else if (attributes[i].type === "number") {
-        // validation[i] = yup.string();
+        validation[i] = Yup.number().min(3, "Enter Number bigger than 3");
       }
 
       if (attributes[i].required) {
