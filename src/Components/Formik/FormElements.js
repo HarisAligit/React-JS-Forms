@@ -34,7 +34,7 @@ function NumberField(props) {
 }
 
 function TextField(props) {
-  const { name, label, placeholder } = props;
+  const { name, value, label, placeholder, handleChange } = props;
   return (
     <div>
       {label && <label htmlFor={name}>{label}</label>}
@@ -42,6 +42,8 @@ function TextField(props) {
         type="text"
         name={name}
         id={name}
+        onChange={handleChange}
+        value={value}
         placeholder={placeholder || ""}
       />
       <ErrorMessage
@@ -92,23 +94,14 @@ function SelectField(props) {
     <div>
       {label && <label htmlFor={name}>{label}</label>}
       <Field as="select" id={name} name={name}>
-        {({ field }) => (
-          <select
-            {...field}
-            onChange={(e) =>
-              AddInput(e, field, values, touched, setValues, setForm)
-            }
-          >
-            <option value="">Choose...</option>
-            {options.map((opt, index) => (
-              <option
-                key={index}
-                value={opt.value}
-                label={opt.label || opt.value}
-              />
-            ))}
-          </select>
-        )}
+        <option value="">Choose...</option>
+        {options.map((opt, index) => (
+          <option
+            key={index}
+            value={opt.value}
+            label={opt.label || opt.value}
+          />
+        ))}
       </Field>
       <ErrorMessage
         name={name}

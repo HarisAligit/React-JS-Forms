@@ -48,19 +48,21 @@ const getInitialValues = (data) => {
   const values = {};
   data.map((attr) => {
     switch (startTransition.type) {
-      case "string":
-        values[attr?.key] = "";
-        break;
       case "text":
         values[attr?.key] = "";
         break;
       case "number":
         values[attr?.key] = 0;
         break;
+      case "role":
+        values[attr?.key] = "";
+        break;
       default:
         values[attr?.key] = "";
     }
   });
+
+  return values;
 };
 
 const OwnSimpleForm = () => {
@@ -102,31 +104,35 @@ const OwnSimpleForm = () => {
 
   const FormComponents = ({
     name,
-    schema,
-    values,
+    label,
+    value,
     touched,
     setValues,
     handleChange,
+    type,
+    options,
+
+    // name, label, placeholder, handleChange, key
   }) => {
     const props = {
       name: name,
-      label: schema.label,
-      options: schema.options,
-      values: values,
+      label: label,
+      value: value,
       touched: touched,
       setValues: setValues,
+      options: options,
       handleChange,
     };
 
-    const type = schema.type;
+    const fieldType = type;
 
-    if (type === "text" || type === "email") return <TextField {...props} />;
+    if (fieldType === "text" || fieldType === "email")
+      return <TextField {...props} />;
     else if (type === "number") return <NumberField {...props} />;
     else return <SelectField {...props} />;
   };
 
   const onSubmit = (values, { setSubmitting }) => {
-    console.log(values);
     alert(JSON.stringify(values));
     setSubmitting(false);
   };
@@ -136,7 +142,7 @@ const OwnSimpleForm = () => {
       <Formik
         enableReinitialize
         initialValues={getInitialValues(attributes)}
-        validationSchema={ValidationSchema}
+        // validationSchema={ValidationSchema}
         onSubmit={onSubmit}
       >
         {(formikProps) => {
@@ -147,8 +153,10 @@ const OwnSimpleForm = () => {
                   <div key={obj?.key}>
                     <FormComponents
                       name={obj?.key}
-                      // schema={FormData[key]}
-                      values={formikProps?.values}
+                      label={obj?.label}
+                      type={obj?.type}
+                      options={obj?.options}
+                      value={formikProps?.values.key}
                       touched={formikProps?.touched}
                       setValues={formikProps?.setValues}
                       handleChange={formikProps?.handleChange}
