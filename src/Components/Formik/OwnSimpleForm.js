@@ -106,8 +106,9 @@ const OwnSimpleForm = () => {
     name,
     label,
     value,
+    values,
     touched,
-    setValues,
+    setFieldValue,
     handleChange,
     type,
     options,
@@ -118,8 +119,9 @@ const OwnSimpleForm = () => {
       name: name,
       label: label,
       value: value,
+      values: values,
       touched: touched,
-      setValues: setValues,
+      setFieldValue: setFieldValue,
       options: options,
       handleChange,
     };
@@ -128,8 +130,8 @@ const OwnSimpleForm = () => {
 
     if (fieldType === "text" || fieldType === "email")
       return <TextField {...props} />;
+    else if (fieldType === "select") return <SelectField {...props} />;
     else if (type === "number") return <NumberField {...props} />;
-    else return <SelectField {...props} />;
   };
 
   const onSubmit = (values, { setSubmitting }) => {
@@ -157,8 +159,9 @@ const OwnSimpleForm = () => {
                       type={obj?.type}
                       options={obj?.options}
                       value={formikProps?.values.key}
+                      values={attributes}
                       touched={formikProps?.touched}
-                      setValues={formikProps?.setValues}
+                      setFieldValue={formikProps?.setFieldValue}
                       handleChange={formikProps?.handleChange}
                     />
                   </div>

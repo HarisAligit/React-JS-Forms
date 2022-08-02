@@ -14,7 +14,7 @@ function FormikForm(props) {
 }
 
 function NumberField(props) {
-  const { name, label, placeholder, handleChange, key } = props;
+  const { name, value, label, placeholder, handleChange } = props;
   return (
     <div>
       {label && <label htmlFor={name}>{label}</label>}
@@ -22,7 +22,8 @@ function NumberField(props) {
         type="number"
         name={name}
         id={name}
-        onChange={handleChange(key)}
+        value={value}
+        onChange={handleChange}
         placeholder={placeholder || ""}
       />
       <ErrorMessage
@@ -54,12 +55,45 @@ function TextField(props) {
   );
 }
 
-const AddInput = (e, field, values, touched, setValues, setForm) => {
+const AddInput = (
+  e,
+  field,
+  values,
+  touched,
+  setFieldValue,
+  setForm,
+  handleChange
+) => {
   // setValues({
   //   ...values,
-  //   ...{ userid: { type: "text", label: "Name", required: true } },
+  //   ...{
+  //     key: `${e.target.value}id`,
+  //     type: "number",
+  //     label: `${e.target.value} id: `,
+  //     required: true,
+  //   },
   // });
-  // console.log("values: ", values);
+
+  if (!flag) {
+    values.push({
+      key: `${e.target.value}id`,
+      type: "number",
+      label: `${e.target.value} id: `,
+      required: true,
+    });
+    flag = true;
+    setFieldValue(values);
+  } else {
+    values.pop();
+    values.push({
+      key: `${e.target.value}id`,
+      type: "number",
+      label: `${e.target.value} id: `,
+      required: true,
+    });
+    setFieldValue(values);
+  }
+  console.log("\nvalues: ", values, "\n");
 
   // values["userid"] = {
   //   type: "text",
@@ -67,41 +101,47 @@ const AddInput = (e, field, values, touched, setValues, setForm) => {
   //   required: true,
   // };
 
-  if (!flag) {
-    values.push({
-      key: "userid",
-      type: "number",
-      label: `${e.target.value} Id: `,
-      required: true,
-    });
-    flag = true;
-    setValues(values);
-    setForm(values);
-  } else {
-    values[values.length - 1].label = `${e.target.value} Id: `;
-    setValues(values);
-    setForm(values);
-  }
-
-  console.log("values: ", values);
+  // console.log(field, values, touched, setValues, setForm);
+  // if (!flag) {
+  //   values.push({
+  //     key: "userid",
+  //     type: "number",
+  //     label: `${e.target.value} Id: `,
+  //     required: true,
+  //   });
+  //   flag = true;
+  //   setValues(values);
+  //   setForm(values);
+  // } else {
+  //   values[values.length - 1].label = `${e.target.value} Id: `;
+  //   setValues(values);
+  //   setForm(values);
+  // }
 
   field.onChange(e);
 };
 
 function SelectField(props) {
-  const { name, label, options, values, touched, setValues, setForm } = props;
+  const { name, label, options, values, touched, setFieldValue } = props;
   return (
     <div>
       {label && <label htmlFor={name}>{label}</label>}
       <Field as="select" id={name} name={name}>
-        <option value="">Choose...</option>
-        {options.map((opt, index) => (
-          <option
-            key={index}
-            value={opt.value}
-            label={opt.label || opt.value}
-          />
-        ))}
+        {({ field }) => (
+          <select
+            {...field}
+            onChange={(e) => AddInput(e, field, values, touched, setFieldValue)}
+          >
+            <option value="">Choose...</option>
+            {options.map((opt, index) => (
+              <option
+                key={index}
+                value={opt.value}
+                label={opt.label || opt.value}
+              />
+            ))}
+          </select>
+        )}
       </Field>
       <ErrorMessage
         name={name}
