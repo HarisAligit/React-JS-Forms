@@ -13,11 +13,6 @@ const SimpleHookForm = () => {
       .max(30, "Name is too Long (Max 30 characters allowed)")
       .required("Required"),
     email: yup.string().email().required("Required"),
-    address: yup
-      .string()
-      .min(10, "Address cannot be under 10 characters")
-      .max(500, "Address is too long")
-      .required("Required"),
     role: yup
       .string()
       .required("Required")
@@ -59,34 +54,29 @@ const SimpleHookForm = () => {
   const { fields, append, remove } = useFieldArray(
     { name: "name", control },
     { name: "email", control },
-    { name: "address", control },
     { name: "role", control }
   );
 
   const Role = watch("role");
 
   function onSubmit(data) {
+    console.log("\nI am here in OnSubmit: ", data);
     alert(JSON.stringify(data));
   }
 
   useEffect(() => {
-    if (flag) {
-      remove(fields.length - 1);
-    }
-    console.log("\nRole: ", Role);
+    if (flag) remove(fields.length - 1);
+
     const currentProp = Role || "";
 
-    if (currentProp != "") {
-      flag = true;
-    }
+    if (currentProp !== "") flag = true;
 
-    if (currentProp === "admin") {
+    if (
+      currentProp === "admin" ||
+      currentProp === "user" ||
+      currentProp === "employee"
+    )
       append({ userid: "" });
-    } else if (currentProp === "user") {
-      append({ userid: "" });
-    } else if (currentProp === "employee") {
-      append({ userid: "" });
-    }
   }, [Role]);
 
   return (
@@ -94,6 +84,25 @@ const SimpleHookForm = () => {
       <form onSubmit={handleSubmit(onSubmit)}>
         <h2 className="mb-3">React Hook Dynamic Form Tutorial</h2>
         <div className="form-group">
+          <div className="form-group col-6">
+            <label>Name</label>
+            <input
+              name={"name"}
+              {...register("name")}
+              type="text"
+              className={`form-control ${errors.name ? "is-invalid" : ""}`}
+            />
+            <div className="invalid-feedback">{errors.name?.message}</div>
+          </div>
+          <div className="form-group col-6">
+            <label>Email</label>
+            <input
+              name={"email"}
+              {...register("email")}
+              type="email"
+              className={`form-control ${errors.email ? "is-invalid" : ""}`}
+            />
+          </div>
           <label className="mb-2">Choose Role</label>
           <select
             name="role"
@@ -106,30 +115,30 @@ const SimpleHookForm = () => {
               </option>
             ))}
           </select>
-          {fields.map((item, i) => (
-            <div key={i} className="list-group list-group-flush">
-              <div className="list-group-item">
-                <h5 className="card-title">Please Enter your UserID: </h5>
-                <div className="form-row">
-                  <div className="form-group col-6">
-                    <label>User ID: </label>
-                    <input
-                      name={"userid"}
-                      {...register("userid")}
-                      type="number"
-                      className={`form-control ${
-                        errors.userid ? "is-invalid" : ""
-                      }`}
-                    />
-                    <div className="invalid-feedback">
-                      {errors.userid?.message}
-                    </div>
+        </div>
+        {fields.map((item, i) => (
+          <div key={i} className="list-group list-group-flush">
+            <div className="list-group-item">
+              <h5 className="card-title">Please Enter your UserID: </h5>
+              <div className="form-row">
+                <div className="form-group col-6">
+                  <label>{Role} ID:</label>
+                  <input
+                    name={"userid"}
+                    {...register("userid")}
+                    type="number"
+                    className={`form-control ${
+                      errors.userid ? "is-invalid" : ""
+                    }`}
+                  />
+                  <div className="invalid-feedback">
+                    {errors.userid?.message}
                   </div>
                 </div>
               </div>
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
         <button type="submit" className="btn btn-success mt-3 mb-2">
           Submit
         </button>
